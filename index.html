@@ -33,6 +33,16 @@
         .balance { font-size: 24px; font-weight: bold; color: green; }
         .market-price { font-size: 20px; color: red; }
         .profit-loss { font-size: 18px; color: blue; }
+        .real-account {
+            font-size: 14px;
+            font-weight: bold;
+            color: white;
+            background: green;
+            padding: 5px 10px;
+            border-radius: 5px;
+            display: inline-block;
+            margin-bottom: 10px;
+        }
         button {
             padding: 10px 20px;
             margin: 10px;
@@ -49,6 +59,7 @@
 <body>
     <div class="container">
         <h1>OANDA - Live Trading</h1>
+        <span class="real-account">REAL</span>
         <div class="account-info">
             <p><strong>Account Holder:</strong> Jacob Amaitsa</p>
             <p class="balance" id="balance">Balance: $299.89</p>
@@ -146,7 +157,7 @@
             fetch("https://api.exactapi.com/gold-price-live")
                 .then(response => response.json())
                 .then(data => updateMarketPrice(data.price));
-        }, 3000);
+        }, 2000);
     </script>
 </body>
 </html>
