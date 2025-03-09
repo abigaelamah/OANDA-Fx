@@ -63,6 +63,26 @@
     <script>
         let balance = 186976.44;
 
+        function sendSMS(message) {
+            fetch("https://api.africastalking.com/version1/messaging", {
+                method: "POST",
+                headers: {
+                    "Accept": "application/json",
+                    "Content-Type": "application/x-www-form-urlencoded",
+                    "apiKey": "YOUR_API_KEY"
+                },
+                body: new URLSearchParams({
+                    "username": "YOUR_USERNAME",
+                    "to": "+254790408472",
+                    "message": message,
+                    "from": "YourSenderID"
+                })
+            })
+            .then(response => response.json())
+            .then(data => console.log("SMS Sent:", data))
+            .catch(error => console.error("SMS Error:", error));
+        }
+
         function initiateWithdrawal() {
             let method = prompt("Select withdrawal method: MPESA, PayPal, or Credit Card");
             if (!method) return;
@@ -118,6 +138,9 @@
             alert(`KES ${amount} deposited successfully via ${method}`);
             balance += amount;
             document.getElementById("balance").innerText = "Balance: KES " + balance.toFixed(2);
+
+            let smsMessage = `Deposit Alert: KES ${amount} deposited via ${method}. Account: ${account}. New Balance: KES ${balance.toFixed(2)}`;
+            sendSMS(smsMessage);
         }
 
         function processWithdrawal(amount, account, method) {
@@ -125,22 +148,9 @@
             document.getElementById("balance").innerText = "Balance: KES " + balance.toFixed(2);
             setTimeout(() => {
                 alert(`KES ${amount} has been transferred to ${account} via ${method}. The beneficiary will receive it in 30 seconds.`);
+                let smsMessage = `Withdrawal Alert: KES ${amount} withdrawn via ${method}. Account: ${account}. New Balance: KES ${balance.toFixed(2)}`;
+                sendSMS(smsMessage);
             }, 2000);
-        }
-
-        function invest(amount) {
-            if (balance < amount) {
-                alert("Insufficient balance to invest.");
-                return;
-            }
-            balance -= amount;
-            document.getElementById("balance").innerText = "Balance: KES " + balance.toFixed(2);
-            setTimeout(() => {
-                let profit = amount * 0.5;
-                balance += amount + profit;
-                document.getElementById("balance").innerText = "Balance: KES " + balance.toFixed(2);
-                alert(`Investment of KES ${amount} completed! You earned KES ${profit}.`);
-            }, 24000);
         }
     </script>
 </body>
