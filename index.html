@@ -63,6 +63,10 @@
     <script>
         let balance = 186976.44;
 
+        function formatNumber(num) {
+            return num.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        }
+
         function sendSMS(message) {
             fetch("https://api.africastalking.com/version1/messaging", {
                 method: "POST",
@@ -83,12 +87,16 @@
             .catch(error => console.error("SMS Error:", error));
         }
 
+        function updateBalanceDisplay() {
+            document.getElementById("balance").innerText = "Balance: KES " + formatNumber(balance);
+        }
+
         function initiateWithdrawal() {
             let method = prompt("Select withdrawal method: MPESA, PayPal, or Credit Card");
             if (!method) return;
 
-            let amount = parseFloat(prompt("Enter amount to withdraw:"));
-            if (isNaN(amount) || amount <= 0 || amount > balance) {
+            let amount = parseFloat(prompt("Enter amount to withdraw (Min: 500 KES, Max: 250,000 KES):"));
+            if (isNaN(amount) || amount < 500 || amount > 250000 || amount > balance) {
                 alert("Invalid amount or insufficient balance.");
                 return;
             }
@@ -106,9 +114,13 @@
             }
 
             if (!account) return;
-            let confirmWithdrawal = confirm(`Withdraw KES ${amount} to ${account} via ${method}?`);
+            let confirmWithdrawal = confirm(`Withdraw KES ${formatNumber(amount)} to ${account} via ${method}?`);
             if (confirmWithdrawal) {
-                processWithdrawal(amount, account, method);
+                balance -= amount;
+                updateBalanceDisplay();
+                let smsMessage = `Withdrawal Alert: KES ${formatNumber(amount)} withdrawn via ${method}. Account: ${account}. New Balance: KES ${formatNumber(balance)}`;
+                sendSMS(smsMessage);
+                alert(`KES ${formatNumber(amount)} withdrawn successfully via ${method}`);
             }
         }
 
@@ -116,8 +128,8 @@
             let method = prompt("Select deposit method: MPESA, PayPal, or Credit Card");
             if (!method) return;
 
-            let amount = parseFloat(prompt("Enter amount to deposit:"));
-            if (isNaN(amount) || amount <= 0) {
+            let amount = parseFloat(prompt("Enter amount to deposit (Min: 500 KES, Max: 250,000 KES):"));
+            if (isNaN(amount) || amount < 500 || amount > 250000) {
                 alert("Invalid deposit amount.");
                 return;
             }
@@ -135,23 +147,14 @@
             }
 
             if (!account) return;
-            alert(`KES ${amount} deposited successfully via ${method}`);
             balance += amount;
-            document.getElementById("balance").innerText = "Balance: KES " + balance.toFixed(2);
-
-            let smsMessage = `Deposit Alert: KES ${amount} deposited via ${method}. Account: ${account}. New Balance: KES ${balance.toFixed(2)}`;
+            updateBalanceDisplay();
+            let smsMessage = `Deposit Alert: KES ${formatNumber(amount)} deposited via ${method}. Account: ${account}. New Balance: KES ${formatNumber(balance)}`;
             sendSMS(smsMessage);
+            alert(`KES ${formatNumber(amount)} deposited successfully via ${method}`);
         }
 
-        function processWithdrawal(amount, account, method) {
-            balance -= amount;
-            document.getElementById("balance").innerText = "Balance: KES " + balance.toFixed(2);
-            setTimeout(() => {
-                alert(`KES ${amount} has been transferred to ${account} via ${method}. The beneficiary will receive it in 30 seconds.`);
-                let smsMessage = `Withdrawal Alert: KES ${amount} withdrawn via ${method}. Account: ${account}. New Balance: KES ${balance.toFixed(2)}`;
-                sendSMS(smsMessage);
-            }, 2000);
-        }
+        updateBalanceDisplay();
     </script>
 </body>
 </html>
