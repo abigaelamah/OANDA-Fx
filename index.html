@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OANDA - Live Trading Dashboard</title>
+    <title>OANDA - Investment Dashboard</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://s3.tradingview.com/tv.js"></script>
     <style>
@@ -23,7 +23,7 @@
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
         }
         h1 { color: #0073e6; }
-        .account-info, .trade-info, .controls {
+        .account-info, .controls, .investment-plans {
             margin-bottom: 20px;
             padding: 10px;
             border: 1px solid #ddd;
@@ -31,18 +31,6 @@
             background: #f9f9f9;
         }
         .balance { font-size: 24px; font-weight: bold; color: green; }
-        .market-price { font-size: 20px; color: red; }
-        .profit-loss { font-size: 18px; color: blue; }
-        .real-account {
-            font-size: 14px;
-            font-weight: bold;
-            color: white;
-            background: green;
-            padding: 5px 10px;
-            border-radius: 5px;
-            display: inline-block;
-            margin-bottom: 10px;
-        }
         button {
             padding: 10px 20px;
             margin: 10px;
@@ -51,47 +39,29 @@
             font-size: 16px;
             border-radius: 5px;
         }
-        .buy { background-color: green; color: white; }
-        .sell { background-color: red; color: white; }
-        .cashout { background-color: orange; color: white; }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>OANDA - Live Trading</h1>
-        <span class="real-account">REAL</span>
+        <h1>OANDA - Investment Platform</h1>
         <div class="account-info">
             <p><strong>Account Holder:</strong> Jacob Amaitsa</p>
-            <p class="balance" id="balance">Balance: $299.89</p>
+            <p class="balance" id="balance">Balance: KES 186,976.44</p>
         </div>
         <div class="controls">
-            <label>Trade Amount: </label>
-            <input type="number" id="tradeAmount" value="100" min="1" step="1">
-            <label>Lot Size: </label>
-            <input type="number" id="lotSize" value="0.01" min="0.01" step="0.01">
-            <label>Take Profit: </label>
-            <input type="number" id="takeProfit" value="0">
-            <label>Stop Loss: </label>
-            <input type="number" id="stopLoss" value="0">
-            <button class="buy" onclick="trade('buy')">BUY</button>
-            <button class="sell" onclick="trade('sell')">SELL</button>
-            <button class="cashout" onclick="cashOut()">Cash Out</button>
             <button onclick="initiateWithdrawal()">Withdraw</button>
             <button onclick="initiateDeposit()">Deposit</button>
         </div>
-        <div class="trade-info">
-            <p class="market-price" id="market-price">Market Price: Fetching...</p>
-            <p class="profit-loss" id="profit-loss">Profit/Loss: $0.00</p>
+        <div class="investment-plans">
+            <h2>Investment Plans</h2>
+            <button onclick="invest(1000)">Basic Plan - KES 1,000 (Weekly Investment, 50% Return in 24Hrs)</button>
+            <button onclick="invest(3000)">Gold Plan - KES 3,000 (Bi-Weekly Investment, 50% Return in 24Hrs)</button>
+            <button onclick="invest(5000)">Premium Plan - KES 5,000 (Monthly Investment, 50% Return in 24Hrs)</button>
         </div>
-        <div id="tradingview_chart"></div>
     </div>
     
     <script>
-        let balance = 299.89;
-        let marketPrice = 1900;
-        let profitLoss = 0;
-        let tradeActive = false;
-        let entryPrice, takeProfit, stopLoss;
+        let balance = 186976.44;
 
         function initiateWithdrawal() {
             let method = prompt("Select withdrawal method: MPESA, PayPal, or Credit Card");
@@ -103,15 +73,22 @@
                 return;
             }
 
+            let account;
             if (method.toLowerCase() === "mpesa") {
-                let mpesaNumber = prompt("Enter your MPESA number:");
-                if (!mpesaNumber) return;
-                let confirmWithdrawal = confirm(`Withdraw $${amount} to ${mpesaNumber}?`);
-                if (confirmWithdrawal) {
-                    processWithdrawal(amount, mpesaNumber, "MPESA");
-                }
+                account = prompt("Enter your MPESA number:");
+            } else if (method.toLowerCase() === "paypal") {
+                account = prompt("Enter your PayPal email:");
+            } else if (method.toLowerCase() === "credit card") {
+                account = prompt("Enter your Credit Card number:");
             } else {
-                alert("Currently, only MPESA withdrawals are enabled.");
+                alert("Invalid method selected.");
+                return;
+            }
+
+            if (!account) return;
+            let confirmWithdrawal = confirm(`Withdraw KES ${amount} to ${account} via ${method}?`);
+            if (confirmWithdrawal) {
+                processWithdrawal(amount, account, method);
             }
         }
 
@@ -125,17 +102,45 @@
                 return;
             }
 
-            alert(`$${amount} deposited successfully via ${method}`);
+            let account;
+            if (method.toLowerCase() === "mpesa") {
+                account = prompt("Enter your MPESA number:");
+            } else if (method.toLowerCase() === "paypal") {
+                account = prompt("Enter your PayPal email:");
+            } else if (method.toLowerCase() === "credit card") {
+                account = prompt("Enter your Credit Card number:");
+            } else {
+                alert("Invalid method selected.");
+                return;
+            }
+
+            if (!account) return;
+            alert(`KES ${amount} deposited successfully via ${method}`);
             balance += amount;
-            document.getElementById("balance").innerText = "Balance: $" + balance.toFixed(2);
+            document.getElementById("balance").innerText = "Balance: KES " + balance.toFixed(2);
         }
 
         function processWithdrawal(amount, account, method) {
             balance -= amount;
-            document.getElementById("balance").innerText = "Balance: $" + balance.toFixed(2);
+            document.getElementById("balance").innerText = "Balance: KES " + balance.toFixed(2);
             setTimeout(() => {
-                alert(`$${amount} has been transferred to ${account} via ${method}. The beneficiary will receive it in 30 seconds.`);
+                alert(`KES ${amount} has been transferred to ${account} via ${method}. The beneficiary will receive it in 30 seconds.`);
             }, 2000);
+        }
+
+        function invest(amount) {
+            if (balance < amount) {
+                alert("Insufficient balance to invest.");
+                return;
+            }
+            balance -= amount;
+            document.getElementById("balance").innerText = "Balance: KES " + balance.toFixed(2);
+            setTimeout(() => {
+                let profit = amount * 0.5;
+                balance += amount + profit;
+                document.getElementById("balance").innerText = "Balance: KES " + balance.toFixed(2);
+                alert(`Investment of KES ${amount} completed! You earned KES ${profit}.`);
+            }, 24000);
         }
     </script>
 </body>
