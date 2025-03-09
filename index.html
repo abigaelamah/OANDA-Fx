@@ -54,13 +54,6 @@
         .buy { background-color: green; color: white; }
         .sell { background-color: red; color: white; }
         .cashout { background-color: orange; color: white; }
-        .deposit, .withdraw {
-            background-color: blue;
-            color: white;
-            padding: 10px;
-            border-radius: 5px;
-            margin: 5px;
-        }
     </style>
 </head>
 <body>
@@ -70,8 +63,6 @@
         <div class="account-info">
             <p><strong>Account Holder:</strong> Jacob Amaitsa</p>
             <p class="balance" id="balance">Balance: $299.89</p>
-            <button class="deposit" onclick="depositFunds()">Deposit</button>
-            <button class="withdraw" onclick="withdrawFunds()">Withdraw</button>
         </div>
         <div class="controls">
             <label>Trade Amount: </label>
@@ -85,6 +76,7 @@
             <button class="buy" onclick="trade('buy')">BUY</button>
             <button class="sell" onclick="trade('sell')">SELL</button>
             <button class="cashout" onclick="cashOut()">Cash Out</button>
+            <button onclick="initiateWithdrawal()">Withdraw</button>
         </div>
         <div class="trade-info">
             <p class="market-price" id="market-price">Market Price: Fetching...</p>
@@ -96,74 +88,32 @@
     <script>
         let balance = 299.89;
         let marketPrice = 1900;
-        let tradeAmount = 100;
-        let lotSize = 0.01;
         let profitLoss = 0;
         let tradeActive = false;
         let entryPrice, takeProfit, stopLoss;
 
-        function updateMarketPrice(price) {
-            marketPrice = price;
-            document.getElementById("market-price").innerText = "Market Price: $" + price.toFixed(2);
-            if (tradeActive) {
-                calculateProfitLoss();
-            }
-        }
-        
-        function calculateProfitLoss() {
-            profitLoss = (marketPrice - entryPrice) * (lotSize * 100); 
-            document.getElementById("profit-loss").innerText = "Profit/Loss: $" + profitLoss.toFixed(2);
-            if (profitLoss >= takeProfit) {
-                alert("Take Profit hit! Trade closed.");
-                cashOut();
-            } else if (profitLoss <= stopLoss) {
-                alert("Stop Loss hit! Trade closed.");
-                cashOut();
-            }
-        }
-        
-        function trade(action) {
-            tradeAmount = parseFloat(document.getElementById("tradeAmount").value);
-            lotSize = parseFloat(document.getElementById("lotSize").value);
-            takeProfit = parseFloat(document.getElementById("takeProfit").value);
-            stopLoss = -Math.abs(parseFloat(document.getElementById("stopLoss").value));
+        function initiateWithdrawal() {
+            let method = prompt("Select withdrawal method: MPESA, PayPal, or Credit Card");
+            if (!method) return;
 
-            if (tradeAmount > balance) {
-                alert("Insufficient balance!");
-                return;
-            }
-            balance -= tradeAmount;
-            document.getElementById("balance").innerText = "Balance: $" + balance.toFixed(2);
-            entryPrice = marketPrice;
-            tradeActive = true;
-            alert("Trade placed: " + action.toUpperCase() + " with $" + tradeAmount);
-        }
-        
-        function cashOut() {
-            balance += profitLoss;
-            document.getElementById("balance").innerText = "Balance: $" + balance.toFixed(2);
-            profitLoss = 0;
-            tradeActive = false;
-            document.getElementById("profit-loss").innerText = "Profit/Loss: $0.00";
-        }
-
-        function depositFunds() {
-            let amount = prompt("Enter deposit amount:");
-            if (amount) {
-                balance += parseFloat(amount);
-                document.getElementById("balance").innerText = "Balance: $" + balance.toFixed(2);
-                alert("Deposit successful!");
-            }
-        }
-
-        function withdrawFunds() {
-            let amount = prompt("Enter withdrawal amount:");
-            if (amount && parseFloat(amount) <= balance) {
-                balance -= parseFloat(amount);
-                document.getElementById("balance").innerText = "Balance: $" + balance.toFixed(2);
-                alert("Withdrawal successful!");
+            if (method.toLowerCase() === "mpesa") {
+                let mpesaNumber = prompt("Enter your MPESA number:");
+                if (!mpesaNumber) return;
+                let amount = prompt("Enter amount to withdraw:");
+                if (!amount || amount > balance) {
+                    alert("Invalid amount or insufficient balance.");
+                    return;
+                }
+                let confirmWithdrawal = confirm(`Withdraw $${amount} to ${mpesaNumber}?`);
+                if (confirmWithdrawal) {
+                    balance -= amount;
+                    document.getElementById("balance").innerText = "Balance: $" + balance.toFixed(2);
+                    setTimeout(() => {
+                        alert(`$${amount} has been transferred to ${mpesaNumber}. The beneficiary will receive it in 30 seconds.`);
+                    }, 2000);
+                }
             } else {
-                alert("Insufficient balance!");
+                alert("Currently, only MPESA withdrawals are enabled.");
             }
         }
     </script>
