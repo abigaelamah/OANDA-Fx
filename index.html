@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>OANDA - Trading Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -51,26 +52,11 @@
             font-size: 16px;
             border-radius: 5px;
         }
-        .buy {
-            background-color: green;
-            color: white;
-        }
-        .sell {
-            background-color: red;
-            color: white;
-        }
-        .cashout {
-            background-color: orange;
-            color: white;
-        }
-        .deposit {
-            background-color: blue;
-            color: white;
-        }
-        .withdraw {
-            background-color: purple;
-            color: white;
-        }
+        .buy { background-color: green; color: white; }
+        .sell { background-color: red; color: white; }
+        .cashout { background-color: orange; color: white; }
+        .deposit { background-color: blue; color: white; }
+        .withdraw { background-color: purple; color: white; }
     </style>
 </head>
 <body>
@@ -93,7 +79,7 @@
             <button class="cashout" onclick="cashOut()">Cash Out</button>
             <p id="profit-loss">Profit/Loss: $0.00</p>
         </div>
-        <div id="forex-chart" style="height: 300px; background: #ddd; margin-top: 20px;">Forex Chart Placeholder</div>
+        <canvas id="goldChart" width="400" height="200"></canvas>
         <p style="margin-top: 20px; font-size: 14px;">Certified by Forex BCLB</p>
     </div>
 
@@ -101,9 +87,22 @@
         let balance = 299.89;
         let stake = 100;
         let profitLoss = 0;
+        let goldPrices = [1900, 1910, 1895, 1920, 1935, 1915];
+        let chart;
 
-        function trade(action) {
-            alert("You clicked " + action.toUpperCase());
+        function updateMarket() {
+            let change = Math.random() < 0.10 ? (Math.random() * 5) : -(Math.random() * 0.05);
+            let newPrice = goldPrices[goldPrices.length - 1] + change;
+            goldPrices.push(newPrice);
+            if (goldPrices.length > 10) goldPrices.shift();
+            document.getElementById("market-price").innerText = "Market Price: $" + newPrice.toFixed(2);
+            updateChart();
+        }
+
+        function updateChart() {
+            chart.data.labels = Array.from({ length: goldPrices.length }, (_, i) => i + 1);
+            chart.data.datasets[0].data = goldPrices;
+            chart.update();
         }
 
         function cashOut() {
@@ -111,14 +110,6 @@
             document.getElementById("balance").innerText = "Balance: $" + balance.toFixed(2);
             profitLoss = 0;
             document.getElementById("profit-loss").innerText = "Profit/Loss: $0.00";
-        }
-
-        function depositFunds() {
-            let amount = parseFloat(prompt("Enter deposit amount:"));
-            if (!isNaN(amount) && amount > 0) {
-                balance += amount;
-                document.getElementById("balance").innerText = "Balance: $" + balance.toFixed(2);
-            }
         }
 
         function withdrawFunds() {
@@ -146,6 +137,19 @@
                 alert("Invalid amount or insufficient balance.");
             }
         }
+
+        document.addEventListener("DOMContentLoaded", function() {
+            let ctx = document.getElementById('goldChart').getContext('2d');
+            chart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: Array.from({ length: goldPrices.length }, (_, i) => i + 1),
+                    datasets: [{ label: 'Gold Price', data: goldPrices, borderColor: 'gold', fill: false }]
+                },
+                options: { responsive: true, maintainAspectRatio: false }
+            });
+            setInterval(updateMarket, 3000);
+        });
     </script>
 </body>
 </html>
