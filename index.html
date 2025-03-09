@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OANDA - Trading Dashboard</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            text-align: center;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            background: white;
+            max-width: 800px;
+            margin: auto;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            color: #0073e6;
+        }
+        .account-info, .trade-info, .controls {
+            margin-bottom: 20px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            background: #f9f9f9;
+        }
+        .balance {
+            font-size: 24px;
+            font-weight: bold;
+            color: green;
+        }
+        .market-price {
+            font-size: 20px;
+            color: red;
+        }
+        .stake-info {
+            font-size: 18px;
+            color: blue;
+        }
+        button {
+            padding: 10px 20px;
+            margin: 10px;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            border-radius: 5px;
+        }
+        .buy {
+            background-color: green;
+            color: white;
+        }
+        .sell {
+            background-color: red;
+            color: white;
+        }
+        .cashout {
+            background-color: orange;
+            color: white;
+        }
+        .deposit {
+            background-color: blue;
+            color: white;
+        }
+        .withdraw {
+            background-color: purple;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>OANDA</h1>
+        <div class="account-info">
+            <p><strong>Account Holder:</strong> Jacob Amaitsa</p>
+            <p><strong>Account Type:</strong> Real</p>
+            <p class="balance" id="balance">Balance: $299.89</p>
+        </div>
+        <div class="controls">
+            <button class="deposit" onclick="depositFunds()">Deposit</button>
+            <button class="withdraw" onclick="withdrawFunds()">Withdraw</button>
+        </div>
+        <div class="trade-info">
+            <p class="stake-info">Staked: $100 on Gold</p>
+            <p class="market-price" id="market-price">Market Price: $1.1234</p>
+            <button class="buy" onclick="trade('buy')">BUY</button>
+            <button class="sell" onclick="trade('sell')">SELL</button>
+            <button class="cashout" onclick="cashOut()">Cash Out</button>
+            <p id="profit-loss">Profit/Loss: $0.00</p>
+        </div>
+        <div id="forex-chart" style="height: 300px; background: #ddd; margin-top: 20px;">Forex Chart Placeholder</div>
+        <p style="margin-top: 20px; font-size: 14px;">Certified by Forex BCLB</p>
+    </div>
+
+    <script>
+        let balance = 299.89;
+        let stake = 100;
+        let profitLoss = 0;
+
+        function trade(action) {
+            alert("You clicked " + action.toUpperCase());
+        }
+
+        function cashOut() {
+            balance += profitLoss;
+            document.getElementById("balance").innerText = "Balance: $" + balance.toFixed(2);
+            profitLoss = 0;
+            document.getElementById("profit-loss").innerText = "Profit/Loss: $0.00";
+        }
+
+        function depositFunds() {
+            let amount = parseFloat(prompt("Enter deposit amount:"));
+            if (!isNaN(amount) && amount > 0) {
+                balance += amount;
+                document.getElementById("balance").innerText = "Balance: $" + balance.toFixed(2);
+            }
+        }
+
+        function withdrawFunds() {
+            let amount = parseFloat(prompt("Enter withdrawal amount:"));
+            if (!isNaN(amount) && amount > 0 && amount <= balance) {
+                let method = prompt("Select withdrawal method: MPESA, PayPal, Credit Card");
+                if (method) {
+                    if (method.toLowerCase() === "mpesa") {
+                        let mpesaNumber = prompt("Enter your M-Pesa number:");
+                        if (mpesaNumber) {
+                            let confirmTransaction = confirm(`Proceed with withdrawal of $${amount} to ${mpesaNumber}?`);
+                            if (confirmTransaction) {
+                                balance -= amount;
+                                document.getElementById("balance").innerText = "Balance: $" + balance.toFixed(2);
+                                setTimeout(() => {
+                                    alert(`Transaction successful. $${amount} has been transferred to ${mpesaNumber}. The beneficiary will receive it in 30 seconds.`);
+                                }, 3000);
+                            }
+                        }
+                    } else {
+                        alert("Transaction successful. Amount withdrawn: $" + amount);
+                    }
+                }
+            } else {
+                alert("Invalid amount or insufficient balance.");
+            }
+        }
+    </script>
+</body>
+</html>
