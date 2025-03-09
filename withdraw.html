@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Withdrawal Processing</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            text-align: center;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            background: white;
+            max-width: 400px;
+            margin: auto;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 { color: #0073e6; }
+        .message {
+            font-size: 18px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Processing Withdrawal</h1>
+        <p class="message" id="status-message">Please wait while we process your withdrawal...</p>
+    </div>
+
+    <script>
+        // Simulating withdrawal processing
+        setTimeout(() => {
+            document.getElementById("status-message").innerText = "Your withdrawal has been processed successfully! The beneficiary will receive the funds in 30 seconds.";
+        }, 3000);
+    </script>
+</body>
+</html>
