@@ -92,9 +92,28 @@
         let tradeActive = false;
         let entryPrice, takeProfit, stopLoss;
 
-        function initiateWithdrawal() {
-            let method = prompt("Select withdrawal method: MPESA, PayPal, or Credit Card");
-            if (!method) return;
+        <script>
+    function initiateWithdrawal() {
+        let method = prompt("Select withdrawal method: MPESA, PayPal, or Credit Card");
+        if (!method) return;
+
+        method = method.toLowerCase();
+
+        if (method === "mpesa" || method === "paypal" || method === "credit card") {
+            let amount = prompt("Enter amount to withdraw:");
+            if (!amount || amount > balance) {
+                alert("Invalid amount or insufficient balance.");
+                return;
+            }
+
+            // Redirect to withdraw.html with withdrawal details in URL parameters
+            window.location.href = `withdraw.html?method=${method}&amount=${amount}`;
+        } else {
+            alert("Invalid method. Please choose MPESA, PayPal, or Credit Card.");
+        }
+    }
+</script>
+
 
             if (method.toLowerCase() === "mpesa") {
                 let mpesaNumber = prompt("Enter your MPESA number:");
