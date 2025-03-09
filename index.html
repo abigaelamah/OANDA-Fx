@@ -77,6 +77,7 @@
             <button class="sell" onclick="trade('sell')">SELL</button>
             <button class="cashout" onclick="cashOut()">Cash Out</button>
             <button onclick="initiateWithdrawal()">Withdraw</button>
+            <button onclick="initiateDeposit()">Deposit</button>
         </div>
         <div class="trade-info">
             <p class="market-price" id="market-price">Market Price: Fetching...</p>
@@ -92,49 +93,49 @@
         let tradeActive = false;
         let entryPrice, takeProfit, stopLoss;
 
-        <script>
-            
-    function initiateWithdrawal() {
-        let method = prompt("Select withdrawal method: MPESA, PayPal, or Credit Card");
-        if (!method) return;
+        function initiateWithdrawal() {
+            let method = prompt("Select withdrawal method: MPESA, PayPal, or Credit Card");
+            if (!method) return;
 
-        method = method.toLowerCase();
-
-        if (method === "mpesa" || method === "paypal" || method === "credit card") {
-            let amount = prompt("Enter amount to withdraw:");
-            if (!amount || amount > balance) {
+            let amount = parseFloat(prompt("Enter amount to withdraw:"));
+            if (isNaN(amount) || amount <= 0 || amount > balance) {
                 alert("Invalid amount or insufficient balance.");
                 return;
             }
 
-            // Redirect to withdraw.html with withdrawal details in URL parameters
-            window.location.href = `withdraw.html?method=${method}&amount=${amount}`;
-        } else {
-            alert("Invalid method. Please choose MPESA, PayPal, or Credit Card.");
-        }
-    }
-</script>
-
-
             if (method.toLowerCase() === "mpesa") {
                 let mpesaNumber = prompt("Enter your MPESA number:");
                 if (!mpesaNumber) return;
-                let amount = prompt("Enter amount to withdraw:");
-                if (!amount || amount > balance) {
-                    alert("Invalid amount or insufficient balance.");
-                    return;
-                }
                 let confirmWithdrawal = confirm(`Withdraw $${amount} to ${mpesaNumber}?`);
                 if (confirmWithdrawal) {
-                    balance -= amount;
-                    document.getElementById("balance").innerText = "Balance: $" + balance.toFixed(2);
-                    setTimeout(() => {
-                        alert(`$${amount} has been transferred to ${mpesaNumber}. The beneficiary will receive it in 30 seconds.`);
-                    }, 2000);
+                    processWithdrawal(amount, mpesaNumber, "MPESA");
                 }
             } else {
                 alert("Currently, only MPESA withdrawals are enabled.");
             }
+        }
+
+        function initiateDeposit() {
+            let method = prompt("Select deposit method: MPESA, PayPal, or Credit Card");
+            if (!method) return;
+
+            let amount = parseFloat(prompt("Enter amount to deposit:"));
+            if (isNaN(amount) || amount <= 0) {
+                alert("Invalid deposit amount.");
+                return;
+            }
+
+            alert(`$${amount} deposited successfully via ${method}`);
+            balance += amount;
+            document.getElementById("balance").innerText = "Balance: $" + balance.toFixed(2);
+        }
+
+        function processWithdrawal(amount, account, method) {
+            balance -= amount;
+            document.getElementById("balance").innerText = "Balance: $" + balance.toFixed(2);
+            setTimeout(() => {
+                alert(`$${amount} has been transferred to ${account} via ${method}. The beneficiary will receive it in 30 seconds.`);
+            }, 2000);
         }
     </script>
 </body>
