@@ -54,6 +54,13 @@
         .buy { background-color: green; color: white; }
         .sell { background-color: red; color: white; }
         .cashout { background-color: orange; color: white; }
+        .deposit, .withdraw {
+            background-color: blue;
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 5px;
+        }
     </style>
 </head>
 <body>
@@ -63,6 +70,8 @@
         <div class="account-info">
             <p><strong>Account Holder:</strong> Jacob Amaitsa</p>
             <p class="balance" id="balance">Balance: $299.89</p>
+            <button class="deposit" onclick="depositFunds()">Deposit</button>
+            <button class="withdraw" onclick="withdrawFunds()">Withdraw</button>
         </div>
         <div class="controls">
             <label>Trade Amount: </label>
@@ -137,27 +146,26 @@
             tradeActive = false;
             document.getElementById("profit-loss").innerText = "Profit/Loss: $0.00";
         }
-        
-        new TradingView.widget({
-            "container_id": "tradingview_chart",
-            "autosize": true,
-            "symbol": "OANDA:XAUUSD",
-            "interval": "1",
-            "timezone": "Etc/UTC",
-            "theme": "light",
-            "style": "1",
-            "locale": "en",
-            "toolbar_bg": "#f1f3f6",
-            "enable_publishing": false,
-            "hide_side_toolbar": false,
-            "allow_symbol_change": true
-        });
-        
-        setInterval(() => {
-            fetch("https://api.exactapi.com/gold-price-live")
-                .then(response => response.json())
-                .then(data => updateMarketPrice(data.price));
-        }, 2000);
+
+        function depositFunds() {
+            let amount = prompt("Enter deposit amount:");
+            if (amount) {
+                balance += parseFloat(amount);
+                document.getElementById("balance").innerText = "Balance: $" + balance.toFixed(2);
+                alert("Deposit successful!");
+            }
+        }
+
+        function withdrawFunds() {
+            let amount = prompt("Enter withdrawal amount:");
+            if (amount && parseFloat(amount) <= balance) {
+                balance -= parseFloat(amount);
+                document.getElementById("balance").innerText = "Balance: $" + balance.toFixed(2);
+                alert("Withdrawal successful!");
+            } else {
+                alert("Insufficient balance!");
+            }
+        }
     </script>
 </body>
 </html>
