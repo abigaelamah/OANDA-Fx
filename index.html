@@ -54,9 +54,9 @@
         </div>
         <div class="investment-plans">
             <h2>Investment Plans</h2>
-            <button onclick="invest(1000)">Basic Plan - KES 1,000 (Weekly Investment, 50% Return in 24Hrs)</button>
-            <button onclick="invest(3000)">Gold Plan - KES 3,000 (Bi-Weekly Investment, 50% Return in 24Hrs)</button>
-            <button onclick="invest(5000)">Premium Plan - KES 5,000 (Monthly Investment, 50% Return in 24Hrs)</button>
+            <button onclick="invest(1000, 'Basic')">Basic Plan - KES 1,000 (Low Risk, Weekly Investment, 50% Return in 24Hrs)</button>
+            <button onclick="invest(3000, 'Gold')">Gold Plan - KES 3,000 (Medium Risk, Bi-Weekly Investment, 50% Return in 24Hrs)</button>
+            <button onclick="invest(5000, 'Premium')">Premium Plan - KES 5,000 (High Risk, Monthly Investment, 50% Return in 24Hrs)</button>
         </div>
     </div>
     
@@ -67,76 +67,15 @@
             return num.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
         }
 
-        function sendSMS(message) {
-            fetch("https://api.africastalking.com/version1/messaging", {
-                method: "POST",
-                headers: {
-                    "Accept": "application/json",
-                    "Content-Type": "application/x-www-form-urlencoded",
-                    "apiKey": "YOUR_API_KEY"
-                },
-                body: new URLSearchParams({
-                    "username": "YOUR_USERNAME",
-                    "to": "+254790408472",
-                    "message": message,
-                    "from": "YourSenderID"
-                })
-            })
-            .then(response => response.json())
-            .then(data => console.log("SMS Sent:", data))
-            .catch(error => console.error("SMS Error:", error));
-        }
-
-        function updateBalanceDisplay() {
-            document.getElementById("balance").innerText = "Balance: KES " + formatNumber(balance);
-        }
-
-        function validateInput(method, account) {
-            if (method.toLowerCase() === "paypal" && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(account)) {
-                alert("Invalid PayPal email.");
-                return false;
-            } else if (method.toLowerCase() === "mpesa" && !/^\d{10}$/.test(account)) {
-                alert("Invalid MPESA number.");
-                return false;
-            } else if (method.toLowerCase() === "credit card" && !/^\d{16}$/.test(account)) {
-                alert("Invalid Credit Card number.");
-                return false;
-            }
-            return true;
-        }
-
-        function initiateTransaction(type) {
-            let method = prompt("Select " + type + " method: MPESA, PayPal, or Credit Card");
-            if (!method) return;
-
-            let amount = parseFloat(prompt("Enter amount to " + type + " (Min: 500 KES, Max: 250,000 KES):"));
-            if (isNaN(amount) || amount < 500 || amount > 250000 || (type === "withdraw" && amount > balance)) {
-                alert("Invalid amount or insufficient balance.");
+        function invest(minAmount, planName) {
+            let amount = parseFloat(prompt(`Enter amount for ${planName} Plan (Min: KES ${minAmount}, Max: KES ${minAmount + 1999}):`));
+            if (isNaN(amount) || amount < minAmount || amount > minAmount + 1999) {
+                alert("Invalid amount for selected plan.");
                 return;
             }
-
-            let account = prompt("Enter your " + method + " details:");
-            if (!account || !validateInput(method, account)) return;
-
-            if (confirm(`Confirm ${type} of KES ${formatNumber(amount)} via ${method} to ${account}?`)) {
-                if (type === "withdraw") balance -= amount;
-                else balance += amount;
-                updateBalanceDisplay();
-                let smsMessage = `${type.charAt(0).toUpperCase() + type.slice(1)} Alert: KES ${formatNumber(amount)} ${type}ed via ${method}. Account: ${account}. New Balance: KES ${formatNumber(balance)}`;
-                sendSMS(smsMessage);
-                setTimeout(() => alert(`KES ${formatNumber(amount)} ${type}ed successfully via ${method}. Beneficiary will receive in 30 sec.`), 3000);
-            }
+            let profit = amount * 0.5;
+            alert(`You have invested KES ${formatNumber(amount)} in ${planName} Plan. Your potential return is KES ${formatNumber(profit)} in 24 hours.`);
         }
-
-        function initiateWithdrawal() {
-            initiateTransaction("withdraw");
-        }
-
-        function initiateDeposit() {
-            initiateTransaction("deposit");
-        }
-
-        updateBalanceDisplay();
     </script>
 </body>
 </html>
