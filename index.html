@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - Investment Platform</title>
+    <title>Investment Platform</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -19,6 +19,7 @@
             padding: 20px;
             border-radius: 10px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            display: none;
         }
         h1 { color: #0073e6; }
         input, button {
@@ -34,26 +35,99 @@
             border: none;
             cursor: pointer;
         }
+        #dashboard {
+            max-width: 600px;
+        }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Login</h1>
-        <input type="email" id="email" placeholder="Enter email">
-        <input type="password" id="password" placeholder="Enter password">
+    <!-- Login Page -->
+    <div id="loginPage" class="container">
+        <h1>Sign In</h1>
+        <input type="email" id="loginEmail" placeholder="Enter email">
+        <input type="password" id="loginPassword" placeholder="Enter password">
         <button onclick="login()">Login</button>
-        <p>Don't have an account? <a href="signup.html">Sign Up</a></p>
+        <p>Don't have an account? <a href="#" onclick="showSignup()">Sign Up</a></p>
     </div>
-    
+
+    <!-- Sign Up Page -->
+    <div id="signupPage" class="container">
+        <h1>Sign Up</h1>
+        <input type="text" id="firstName" placeholder="First Name">
+        <input type="text" id="lastName" placeholder="Last Name">
+        <input type="email" id="signupEmail" placeholder="Email Address">
+        <input type="text" id="phoneNumber" placeholder="Phone Number">
+        <input type="password" id="signupPassword" placeholder="Create Password">
+        <input type="password" id="confirmPassword" placeholder="Confirm Password">
+        <button onclick="signup()">Sign Up</button>
+        <p>Already have an account? <a href="#" onclick="showLogin()">Sign In</a></p>
+    </div>
+
+    <!-- Dashboard Page -->
+    <div id="dashboard" class="container">
+        <h1>Welcome to Your Dashboard</h1>
+        <p>You are now logged in.</p>
+        <button onclick="logout()">Logout</button>
+    </div>
+
     <script>
+        // Show login page by default
+        document.getElementById("loginPage").style.display = "block";
+
+        function showSignup() {
+            document.getElementById("loginPage").style.display = "none";
+            document.getElementById("signupPage").style.display = "block";
+        }
+
+        function showLogin() {
+            document.getElementById("signupPage").style.display = "none";
+            document.getElementById("loginPage").style.display = "block";
+        }
+
         function login() {
-            let email = document.getElementById("email").value;
-            let password = document.getElementById("password").value;
+            let email = document.getElementById("loginEmail").value;
+            let password = document.getElementById("loginPassword").value;
+            
             if (email && password) {
-                window.location.href = "dashboard.html";
+                localStorage.setItem("userEmail", email);
+                showDashboard();
             } else {
                 alert("Please enter valid credentials.");
             }
+        }
+
+        function signup() {
+            let firstName = document.getElementById("firstName").value;
+            let lastName = document.getElementById("lastName").value;
+            let email = document.getElementById("signupEmail").value;
+            let phone = document.getElementById("phoneNumber").value;
+            let password = document.getElementById("signupPassword").value;
+            let confirmPassword = document.getElementById("confirmPassword").value;
+
+            if (!firstName || !lastName || !email || !phone || !password || !confirmPassword) {
+                alert("All fields are required.");
+                return;
+            }
+            
+            if (password !== confirmPassword) {
+                alert("Passwords do not match.");
+                return;
+            }
+
+            localStorage.setItem("userEmail", email);
+            showDashboard();
+        }
+
+        function showDashboard() {
+            document.getElementById("loginPage").style.display = "none";
+            document.getElementById("signupPage").style.display = "none";
+            document.getElementById("dashboard").style.display = "block";
+        }
+
+        function logout() {
+            localStorage.removeItem("userEmail");
+            document.getElementById("dashboard").style.display = "none";
+            document.getElementById("loginPage").style.display = "block";
         }
     </script>
 </body>
