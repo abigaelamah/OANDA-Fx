@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Investment Platform</title>
+    <title>The Elysian Investment</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -35,7 +35,7 @@
             border: none;
             cursor: pointer;
         }
-        #dashboard {
+        #investmentPage {
             max-width: 600px;
         }
     </style>
@@ -63,15 +63,18 @@
         <p>Already have an account? <a href="#" onclick="showLogin()">Sign In</a></p>
     </div>
 
-    <!-- Dashboard Page -->
-    <div id="dashboard" class="container">
-        <h1>Welcome to Your Dashboard</h1>
-        <p>You are now logged in.</p>
+    <!-- Investment Page -->
+    <div id="investmentPage" class="container">
+        <h1>The Elysian Investment</h1>
+        <p><strong>Where Elites Meet To Grow Their Financial Pockets</strong></p>
+        <p><strong>Location:</strong> Bazaar Business Plaza, Westlands, Nairobi</p>
+        <p><strong>Contact:</strong> +254790408472</p>
+        <p><strong>Partners:</strong> Redbull, Trust Bank, Coca Cola</p>
+        <p><strong>Number of Clients:</strong> 186</p>
         <button onclick="logout()">Logout</button>
     </div>
 
     <script>
-        // Show login page by default
         document.getElementById("loginPage").style.display = "block";
 
         function showSignup() {
@@ -87,13 +90,19 @@
         function login() {
             let email = document.getElementById("loginEmail").value;
             let password = document.getElementById("loginPassword").value;
-            
-            if (email && password) {
-                localStorage.setItem("userEmail", email);
-                showDashboard();
-            } else {
-                alert("Please enter valid credentials.");
+            let users = JSON.parse(localStorage.getItem("users")) || [];
+            let user = users.find(u => u.email === email);
+
+            if (!user) {
+                alert("This email is not registered. Please sign up first.");
+                return;
             }
+            if (user.password !== password) {
+                alert("Incorrect password. Please try again.");
+                return;
+            }
+            localStorage.setItem("loggedInUser", email);
+            showInvestmentPage();
         }
 
         function signup() {
@@ -103,30 +112,36 @@
             let phone = document.getElementById("phoneNumber").value;
             let password = document.getElementById("signupPassword").value;
             let confirmPassword = document.getElementById("confirmPassword").value;
+            let users = JSON.parse(localStorage.getItem("users")) || [];
 
             if (!firstName || !lastName || !email || !phone || !password || !confirmPassword) {
                 alert("All fields are required.");
                 return;
             }
-            
+            if (users.some(u => u.email === email)) {
+                alert("This email is already registered. Please use another email.");
+                return;
+            }
             if (password !== confirmPassword) {
                 alert("Passwords do not match.");
                 return;
             }
 
-            localStorage.setItem("userEmail", email);
-            showDashboard();
+            users.push({ firstName, lastName, email, phone, password });
+            localStorage.setItem("users", JSON.stringify(users));
+            alert("Sign-up successful! You can now log in.");
+            showLogin();
         }
 
-        function showDashboard() {
+        function showInvestmentPage() {
             document.getElementById("loginPage").style.display = "none";
             document.getElementById("signupPage").style.display = "none";
-            document.getElementById("dashboard").style.display = "block";
+            document.getElementById("investmentPage").style.display = "block";
         }
 
         function logout() {
-            localStorage.removeItem("userEmail");
-            document.getElementById("dashboard").style.display = "none";
+            localStorage.removeItem("loggedInUser");
+            document.getElementById("investmentPage").style.display = "none";
             document.getElementById("loginPage").style.display = "block";
         }
     </script>
