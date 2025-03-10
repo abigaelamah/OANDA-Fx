@@ -3,9 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OANDA - Investment Dashboard</title>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://s3.tradingview.com/tv.js"></script>
+    <title>Login - Investment Platform</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -16,65 +14,46 @@
         }
         .container {
             background: white;
-            max-width: 800px;
+            max-width: 400px;
             margin: auto;
             padding: 20px;
             border-radius: 10px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
         }
         h1 { color: #0073e6; }
-        .account-info, .controls, .investment-plans {
-            margin-bottom: 20px;
+        input, button {
+            width: 100%;
             padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
             border: 1px solid #ddd;
-            border-radius: 10px;
-            background: #f9f9f9;
         }
-        .balance { font-size: 24px; font-weight: bold; color: green; }
         button {
-            padding: 10px 20px;
-            margin: 10px;
+            background-color: #0073e6;
+            color: white;
             border: none;
             cursor: pointer;
-            font-size: 16px;
-            border-radius: 5px;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>OANDA - Investment Platform</h1>
-        <div class="account-info">
-            <p><strong>Account Holder:</strong> Jacob Amaitsa</p>
-            <p class="balance" id="balance">Balance: KES 186,976.44</p>
-        </div>
-        <div class="controls">
-            <button onclick="initiateWithdrawal()">Withdraw</button>
-            <button onclick="initiateDeposit()">Deposit</button>
-        </div>
-        <div class="investment-plans">
-            <h2>Investment Plans</h2>
-            <button onclick="invest(1000, 'Basic')">Basic Plan - KES 1,000 (Low Risk, Weekly Investment, 50% Return in 24Hrs)</button>
-            <button onclick="invest(3000, 'Gold')">Gold Plan - KES 3,000 (Medium Risk, Bi-Weekly Investment, 50% Return in 24Hrs)</button>
-            <button onclick="invest(5000, 'Premium')">Premium Plan - KES 5,000 (High Risk, Monthly Investment, 50% Return in 24Hrs)</button>
-        </div>
+        <h1>Login</h1>
+        <input type="email" id="email" placeholder="Enter email">
+        <input type="password" id="password" placeholder="Enter password">
+        <button onclick="login()">Login</button>
+        <p>Don't have an account? <a href="signup.html">Sign Up</a></p>
     </div>
     
     <script>
-        let balance = 186976.44;
-
-        function formatNumber(num) {
-            return num.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-        }
-
-        function invest(minAmount, planName) {
-            let amount = parseFloat(prompt(`Enter amount for ${planName} Plan (Min: KES ${minAmount}, Max: KES ${minAmount + 1999}):`));
-            if (isNaN(amount) || amount < minAmount || amount > minAmount + 1999) {
-                alert("Invalid amount for selected plan.");
-                return;
+        function login() {
+            let email = document.getElementById("email").value;
+            let password = document.getElementById("password").value;
+            if (email && password) {
+                window.location.href = "dashboard.html";
+            } else {
+                alert("Please enter valid credentials.");
             }
-            let profit = amount * 0.5;
-            alert(`You have invested KES ${formatNumber(amount)} in ${planName} Plan. Your potential return is KES ${formatNumber(profit)} in 24 hours.`);
         }
     </script>
 </body>
